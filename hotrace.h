@@ -6,7 +6,7 @@
 /*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 10:09:38 by qpupier           #+#    #+#             */
-/*   Updated: 2024/02/24 17:22:39 by cbernot          ###   ########.fr       */
+/*   Updated: 2024/02/24 18:06:20 by cbernot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,24 @@
 # include <unistd.h>
 # include <stdlib.h>
 
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 4096
+# endif
+
 typedef struct s_cell
 {
 	char			*key;
 	char			*value;
 	unsigned int	value_len;
 }	t_cell;
+
+// GNL part
+char	*get_next_line(int fd);
+size_t	ft_strlen(const char *s);
+char	*ft_strdup(const char *s1);
+char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_substr(char const *s, unsigned int start, size_t len);
+void	*ft_free_stash(char **stash, int create_line);
 
 char			*ft_realloc(char *datas, int old_size, int new_size);
 void			copy(char *buf, char *datas, int begin, int count);
