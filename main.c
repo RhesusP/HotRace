@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: qpupier <qpupier@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 09:50:54 by qpupier           #+#    #+#             */
-/*   Updated: 2024/02/24 20:52:32 by qpupier          ###   ########lyon.fr   */
+/*   Updated: 2024/02/24 23:26:20 by cbernot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,36 @@ static t_pair	*get_input(unsigned int *position)
 			size *= 2;
 		}
 		datas[(*position)++] = pair;
-		printf("[%d] %d => %s\n", size, pair.len, pair.str);
 	}
 	return (datas);
+}
+
+static void	search(t_cell *map, int map_size)
+{
+	t_pair	pair;
+	int		index;
+
+	(void)map;
+
+	pair = get_next_line(0);
+	while (pair.len > 1)
+	{
+		index = hash(&pair, map_size, 0);
+		if (map[index].key.len != 0)
+		{
+			if (ft_strcmp(map[index].key.str, pair.str))
+				index = handle_collisions(map, map_size, index);
+		}
+		if (map[index].key.len != 0)
+            ft_putstr_endl(map[index].value.str, map[index].value.len);
+        else
+        {
+			write(STDOUT_FILENO, pair.str, pair.len - 1);
+            write(STDOUT_FILENO, ": Not found.\n", 13);
+        }
+		free(pair.str);
+		pair = get_next_line(0);
+	}
 }
 
 static void	insert(t_pair *input, t_cell *map, int elems, int map_size)
@@ -55,7 +82,7 @@ static void	insert(t_pair *input, t_cell *map, int elems, int map_size)
 		index = hash(input, map_size, i);
 		if (map[index].key.len)
 			index = handle_collisions(map, map_size, index);
-		printf("%d -> %d\n", i, index);
+		// printf("%d -> %d\n", i, index);
 		map[index].key = input[i++];
 		map[index].value = input[i++];
 	}
@@ -89,19 +116,25 @@ int	main(void)
 		free(input);
 		return (EXIT_FAILURE);
 	}
-	printf("%d\n", map_size);
+	// printf("%d\n", map_size);
 	init_map(map, map_size);
 	insert(input, map, position, map_size);
-	int i = -1;
-	while (++i < (int)map_size)
-		printf("[%d] %s | %s\n", i, map[i].key.str, map[i].value.str);
+	// int i = -1;
+	// while (++i < (int)map_size)
+	// 	printf("[%d] %s | %s\n", i, map[i].key.str, map[i].value.str);
+
+	search(map, map_size);
+
 	// input = search(map, map_size, input, nb);
 	// while (*input)
 	// {
 	// 	index = hash(&input, map_size);
 	// 	ft_putstr_endl(map[index].value, map[index].value_len);
 	// }
-	// free(input);
+
+	
+	free(input);
 	free(map);
+
 	return (EXIT_SUCCESS);
 }

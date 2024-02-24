@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: qpupier <qpupier@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 16:59:13 by cbernot           #+#    #+#             */
-/*   Updated: 2024/02/24 20:05:06 by qpupier          ###   ########lyon.fr   */
+/*   Updated: 2024/02/24 22:41:46 by cbernot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,39 @@ void	ft_putstr_endl(char *s, int len)
 		return ;
 	write(STDOUT_FILENO, s, len);
 	write(STDOUT_FILENO, "\n", 1);
+}
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t			i;
+	unsigned char	*us1;
+	unsigned char	*us2;
+
+	if (n == 0)
+		return (0);
+	i = 0;
+	us1 = (unsigned char *)s1;
+	us2 = (unsigned char *)s2;
+	while (n - 1 > 0 && us1[i] != '\0' && us2[i] != '\0' && us1[i] == us2[i])
+	{
+		i++;
+		n--;
+	}
+	return (us1[i] - us2[i]);
+}
+
+int	ft_strcmp(char *s1, char *s2)
+{
+	int	i;
+
+	i = 0;
+	// if (ft_strlen(s1) != ft_strlen(s2))
+	// 	return (0);
+	while (s1[i] && s2[i])
+	{
+		if (s1[i] != s2[i])
+			return (s1[i] - s2[i]);
+		i++;
+	}
+	return (0);
 }

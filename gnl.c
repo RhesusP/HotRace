@@ -6,7 +6,7 @@
 /*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 18:04:20 by cbernot           #+#    #+#             */
-/*   Updated: 2024/02/24 19:08:57 by cbernot          ###   ########.fr       */
+/*   Updated: 2024/02/24 23:37:53 by cbernot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 static t_pair	ft_copy_to_stash(char *stash, char *buf)
 {
 	char	*temp;
-	// char	*res;
 	t_pair	res;
 
 	res = (t_pair){0, 0};
@@ -58,7 +57,6 @@ static int	ft_have_nl(char *s)
 
 static t_pair ft_extract_line(char *stash)
 {
-	// char	*line;
 	t_pair res;
 	size_t	i;
 	size_t	j;
