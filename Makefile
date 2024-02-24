@@ -3,17 +3,17 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: qpupier <qpupier@student.42lyon.fr>        +#+  +:+       +#+         #
+#    By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/24 09:33:09 by qpupier           #+#    #+#              #
-#    Updated: 2024/02/24 10:11:02 by qpupier          ###   ########lyon.fr    #
+#    Updated: 2024/02/24 17:05:24 by cbernot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	=	hotrace
 CC		=	cc
 CFLAGS	=	-Wall -Wextra -Werror
-SRCS	=	main.c
+SRCS	=	main.c	hash_map.c	utils.c
 OBJS	=	$(SRCS:.c=.o)
 INCS	=	hotrace.h
 
