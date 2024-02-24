@@ -6,23 +6,24 @@
 /*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 18:04:20 by cbernot           #+#    #+#             */
-/*   Updated: 2024/02/24 18:05:45 by cbernot          ###   ########.fr       */
+/*   Updated: 2024/02/24 19:08:57 by cbernot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "hotrace.h"
 
-static char	*ft_copy_to_stash(char *stash, char *buf)
+static t_pair	ft_copy_to_stash(char *stash, char *buf)
 {
 	char	*temp;
-	char	*res;
+	// char	*res;
+	t_pair	res;
 
-	res = 0;
+	res = (t_pair){0, 0};
 	if (!stash && buf)
 	{
-		res = ft_strdup(buf);
-		if (!res)
-			return (ft_free_stash(&res, 0));
+		res.str = ft_strdup(buf);
+		if (!res.str)
+			return (ft_free_stash(&res.str, 0));
 		return (res);
 	}
 	temp = ft_strdup(stash);
@@ -32,9 +33,9 @@ static char	*ft_copy_to_stash(char *stash, char *buf)
 		return (ft_free_stash(&temp, 0));
 	}
 	ft_free_stash(&stash, 0);
-	res = ft_strjoin(temp, buf);
-	if (!res)
-		ft_free_stash(&res, 0);
+	res.str = ft_strjoin(temp, buf);
+	if (!res.str)
+		ft_free_stash(&res.str, 0);
 	ft_free_stash(&temp, 0);
 	return (res);
 }
@@ -55,9 +56,10 @@ static int	ft_have_nl(char *s)
 	return (0);
 }
 
-static char	*ft_extract_line(char *stash)
+static t_pair ft_extract_line(char *stash)
 {
-	char	*line;
+	// char	*line;
+	t_pair res;
 	size_t	i;
 	size_t	j;
 
@@ -66,66 +68,69 @@ static char	*ft_extract_line(char *stash)
 		return (ft_free_stash(&stash, 0));
 	while (stash[i] != '\n')
 		i++;
-	line = malloc(sizeof(char) * (i + 2));
-	if (!line)
-		return (ft_free_stash(&line, 0));
+	res.str = malloc(sizeof(char) * (i + 2));
+	if (!res.str)
+		return (ft_free_stash(&res.str, 0));
 	j = 0;
 	while (j < i + 1)
 	{
-		line[j] = stash[j];
+		res.str[j] = stash[j];
 		j++;
 	}
-	line[j] = '\0';
-	return (line);
+	res.str[j] = '\0';
+	return (res);
 }
 
-static char	*ft_recreate_stash(char *stash)
+static t_pair	ft_recreate_stash(char *stash)
 {
 	size_t	i;
-	char	*res;
+	t_pair	res;
 
 	i = 0;
 	if (!stash)
-		return (NULL);
+		return ((t_pair){0, 0});
 	while (stash[i] != '\n')
 		i++;
 	if (stash[i + 1] == '\0')
 		return (ft_free_stash(&stash, 0));
-	res = ft_substr(stash, i + 1, ft_strlen(stash));
-	if (!res)
+	res.str = ft_substr(stash, i + 1, ft_strlen(stash));
+	if (!res.str)
 	{
 		ft_free_stash(&stash, 0);
-		return (NULL);
+		return ((t_pair){0, 0});
 	}
 	ft_free_stash(&stash, 0);
 	return (res);
 }
 
-char	*get_next_line(int fd)
+t_pair	get_next_line(int fd)
 {
 	char		buf[BUFFER_SIZE + 1];
 	long		ret;
-	static char	*stash = NULL;
+	static t_pair	pair = {0, 0};
+	int sum;
 	char		*line;
 
+	sum = 0;
 	line = 0;
 	ret = BUFFER_SIZE;
 	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (ft_free_stash(&stash, 0));
+		return (ft_free_stash(&pair.str, 0));
 	while (ret > 0)
 	{
 		ret = read(fd, buf, BUFFER_SIZE);
-		if ((ret <= 0 && !stash) || ret == -1)
-			return (ft_free_stash(&stash, 0));
+		sum += ret;
+		if ((ret <= 0 && !pair.str) || ret == -1)
+			return (ft_free_stash(&pair.str, 0));
 		buf[ret] = '\0';
-		stash = ft_copy_to_stash(stash, buf);
-		if (ft_have_nl(stash))
+		pair.str = ft_copy_to_stash(pair.str, buf).str;
+		if (ft_have_nl(pair.str))
 		{
-			line = ft_extract_line(stash);
+			line = ft_extract_line(pair.str).str;
 			if (!line)
-				return (ft_free_stash(&stash, 0));
-			return (stash = ft_recreate_stash(stash), line);
+				return (ft_free_stash(&pair.str, 0));
+			return (pair = ft_recreate_stash(pair.str), (t_pair){line, sum});
 		}
 	}
-	return (ft_free_stash(&stash, 1));
+	return (ft_free_stash(&(pair.str), 1));
 }

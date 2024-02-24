@@ -6,7 +6,7 @@
 /*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 16:59:13 by cbernot           #+#    #+#             */
-/*   Updated: 2024/02/24 17:22:48 by cbernot          ###   ########.fr       */
+/*   Updated: 2024/02/24 18:28:09 by cbernot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,13 @@ void	ft_putstr_endl(char *s, int len)
 		return ;
 	write(STDOUT_FILENO, s, len);
 	write(STDOUT_FILENO, "\n", 1);
+}
+
+t_pair	create_pair(char *str, unsigned int len)
+{
+	t_pair	pair;
+
+	pair.str = str;
+	pair.len = len;
+	return (pair);
 }
