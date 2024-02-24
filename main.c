@@ -6,7 +6,7 @@
 /*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 09:50:54 by qpupier           #+#    #+#             */
-/*   Updated: 2024/02/24 17:22:07 by cbernot          ###   ########.fr       */
+/*   Updated: 2024/02/24 18:07:35 by cbernot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,10 @@ int	main(void)
 	map_size = get_map_size(nb) + 1;
 	map = malloc(sizeof(t_cell) * map_size);
 	if (!map)
+	{
+		free(input);
 		return (EXIT_FAILURE);
+	}
 	input = search(map, map_size, input, nb);
 	input++;
 	while (*input)
@@ -69,5 +72,7 @@ int	main(void)
 		index = hash(&input, map_size);
 		ft_putstr_endl(map[index].value, map[index].value_len);
 	}
+	// free(input);
+	free(map);
 	return (EXIT_SUCCESS);
 }
