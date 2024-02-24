@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: qpupier <qpupier@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 09:50:54 by qpupier           #+#    #+#             */
-/*   Updated: 2024/02/24 17:22:07 by cbernot          ###   ########.fr       */
+/*   Updated: 2024/02/24 18:18:12 by qpupier          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,5 +69,6 @@ int	main(void)
 		index = hash(&input, map_size);
 		ft_putstr_endl(map[index].value, map[index].value_len);
 	}
+	free(map);
 	return (EXIT_SUCCESS);
 }
