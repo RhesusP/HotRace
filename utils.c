@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: qpupier <qpupier@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 16:59:13 by cbernot           #+#    #+#             */
-/*   Updated: 2024/02/24 18:28:09 by cbernot          ###   ########.fr       */
+/*   Updated: 2024/02/24 20:05:06 by qpupier          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "hotrace.h"
 
-char	*ft_realloc(char *datas, int old_size, int new_size)
+t_pair	*ft_realloc(t_pair *datas, int old_size, int new_size)
 {
-	char	*new;
+	t_pair	*new;
 	int		i;
 
-	new = malloc(sizeof(char) * new_size);
+	new = malloc(sizeof(t_pair) * new_size);
 	if (!new)
 		return (NULL);
 	if (!datas)
@@ -45,13 +45,4 @@ void	ft_putstr_endl(char *s, int len)
 		return ;
 	write(STDOUT_FILENO, s, len);
 	write(STDOUT_FILENO, "\n", 1);
-}
-
-t_pair	create_pair(char *str, unsigned int len)
-{
-	t_pair	pair;
-
-	pair.str = str;
-	pair.len = len;
-	return (pair);
 }
