@@ -6,7 +6,7 @@
 /*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 16:59:13 by cbernot           #+#    #+#             */
-/*   Updated: 2024/02/24 17:00:05 by cbernot          ###   ########.fr       */
+/*   Updated: 2024/02/24 17:22:48 by cbernot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,12 @@ void	copy(char *buf, char *datas, int begin, int count)
 	while (++i < count)
 		datas[begin + i] = buf[i];
 	free(buf);
+}
+
+void	ft_putstr_endl(char *s, int len)
+{
+	if (!s)
+		return ;
+	write(STDOUT_FILENO, s, len);
+	write(STDOUT_FILENO, "\n", 1);
 }

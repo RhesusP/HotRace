@@ -6,7 +6,7 @@
 /*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 09:50:54 by qpupier           #+#    #+#             */
-/*   Updated: 2024/02/24 17:16:45 by cbernot          ###   ########.fr       */
+/*   Updated: 2024/02/24 17:22:07 by cbernot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	main(void)
 	while (*input)
 	{
 		index = hash(&input, map_size);
-		printf("%s\n", map[index].value);
+		ft_putstr_endl(map[index].value, map[index].value_len);
 	}
 	return (EXIT_SUCCESS);
 }
