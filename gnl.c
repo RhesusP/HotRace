@@ -3,132 +3,121 @@
 /*                                                        :::      ::::::::   */
 /*   gnl.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: qpupier <qpupier@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 18:04:20 by cbernot           #+#    #+#             */
-/*   Updated: 2024/02/24 23:37:53 by cbernot          ###   ########.fr       */
+/*   Updated: 2024/02/25 23:26:44 by qpupier          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "hotrace.h"
 
-static t_pair	ft_copy_to_stash(char *stash, char *buf)
+static t_pair	ft_strjoin(t_pair p1, t_pair p2)
 {
-	char	*temp;
-	t_pair	res;
+	t_pair			new;
+	unsigned int	i;
+	unsigned int	j;
 
-	res = (t_pair){0, 0};
-	if (!stash && buf)
-	{
-		res.str = ft_strdup(buf);
-		if (!res.str)
-			return (ft_free_stash(&res.str, 0));
-		return (res);
-	}
-	temp = ft_strdup(stash);
-	if (!temp)
-	{
-		ft_free_stash(&stash, 0);
-		return (ft_free_stash(&temp, 0));
-	}
-	ft_free_stash(&stash, 0);
-	res.str = ft_strjoin(temp, buf);
-	if (!res.str)
-		ft_free_stash(&res.str, 0);
-	ft_free_stash(&temp, 0);
-	return (res);
-}
-
-static int	ft_have_nl(char *s)
-{
-	size_t	i;
-
-	if (!s)
-		return (0);
+	new.len = p1.len + p2.len;
+	new.str = malloc(sizeof(char) * (new.len + 1));
+	if (!new.str)
+		return ((t_pair){NULL, 0});
 	i = 0;
-	while (s[i] != '\0')
+	while (i < p1.len)
 	{
-		if (s[i] == '\n')
-			return (1);
+		new.str[i] = p1.str[i];
 		i++;
 	}
-	return (0);
-}
-
-static t_pair ft_extract_line(char *stash)
-{
-	t_pair res;
-	size_t	i;
-	size_t	j;
-
-	i = 0;
-	if (!stash)
-		return (ft_free_stash(&stash, 0));
-	while (stash[i] != '\n')
-		i++;
-	res.str = malloc(sizeof(char) * (i + 2));
-	if (!res.str)
-		return (ft_free_stash(&res.str, 0));
 	j = 0;
-	while (j < i + 1)
-	{
-		res.str[j] = stash[j];
-		j++;
-	}
-	res.str[j] = '\0';
-	return (res);
+	while (j < p2.len)
+		new.str[i++] = p2.str[j++];
+	new.str[new.len] = '\0';
+	return (new);
 }
 
-static t_pair	ft_recreate_stash(char *stash)
+static int	search_eol(char *str)
 {
-	size_t	i;
-	t_pair	res;
+	int	i;
 
 	i = 0;
-	if (!stash)
-		return ((t_pair){0, 0});
-	while (stash[i] != '\n')
-		i++;
-	if (stash[i + 1] == '\0')
-		return (ft_free_stash(&stash, 0));
-	res.str = ft_substr(stash, i + 1, ft_strlen(stash));
-	if (!res.str)
-	{
-		ft_free_stash(&stash, 0);
-		return ((t_pair){0, 0});
-	}
-	ft_free_stash(&stash, 0);
-	return (res);
+	while (str && str[i])
+		if (str[i++] == '\n')
+			return (i);
+	return (-1);
 }
 
-t_pair	get_next_line(int fd)
+static t_pair	split(t_pair *saved, int eol)
 {
-	char		buf[BUFFER_SIZE + 1];
-	long		ret;
-	static t_pair	pair = {0, 0};
-	int sum;
-	char		*line;
+	char	*tmp;
+	t_pair	new;
 
-	sum = 0;
-	line = 0;
-	ret = BUFFER_SIZE;
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (ft_free_stash(&pair.str, 0));
-	while (ret > 0)
+	new = (t_pair){ft_strndup((*saved).str, eol - 1), eol - 1};
+	tmp = ft_strndup((*saved).str + eol, (*saved).len - eol);
+	free((*saved).str);
+	(*saved).str = tmp;
+	(*saved).len -= eol;
+	if (!(*saved).len)
 	{
-		ret = read(fd, buf, BUFFER_SIZE);
-		sum += ret;
-		if ((ret <= 0 && !pair.str) || ret == -1)
-			return (ft_free_stash(&pair.str, 0));
-		buf[ret] = '\0';
-		pair.str = ft_copy_to_stash(pair.str, buf).str;
-		if (ft_have_nl(pair.str))
-		{
-			line = ft_extract_line(pair.str).str;
-			if (!line)
-				return (ft_free_stash(&pair.str, 0));
-			return (pair = ft_recreate_stash(pair.str), (t_pair){line, sum});
-		}
+		free((*saved).str);
+		(*saved) = (t_pair){NULL, 0};
 	}
-	return (ft_free_stash(&(pair.str), 1));
+	if (!new.len)
+	{
+		free(new.str);
+		new = (t_pair){NULL, 0};
+	}
+	return (new);
+}
+
+static int	get_line(t_pair *saved, int *tmp)
+{
+	char	*old;
+	char	buffer[BUFFER_SIZE + 1];
+	int		eol;
+	int		result;
+
+	eol = -1;
+	result = BUFFER_SIZE;
+	while (eol == -1 && result == BUFFER_SIZE)
+	{
+		result = read(0, buffer, BUFFER_SIZE);
+		if (result == -1)
+			return (-2);
+		if (!result)
+			return (-1);
+		buffer[result] = '\0';
+		eol = search_eol(buffer);
+		if (eol != -1)
+			*tmp = (*saved).len + eol;
+		old = (*saved).str;
+		*saved = ft_strjoin(*saved, (t_pair){buffer, result});
+		if (!(*saved).str)
+			return (-2);
+		free(old);
+	}
+	return (eol);
+}
+
+t_pair	gnl_std_input(void)
+{
+	static t_pair	saved = (t_pair){NULL, 0};
+	t_pair			new;
+	int				eol;
+	int				tmp;
+
+	if (saved.len)
+	{
+		eol = search_eol(saved.str);
+		if (eol > -1)
+			return (split(&saved, eol));
+	}
+	eol = get_line(&saved, &tmp);
+	if (eol == -2)
+		return ((t_pair){NULL, 0});
+	if (eol != -1)
+		return (split(&saved, tmp));
+	new = saved;
+	free(saved.str);
+	saved = (t_pair){NULL, 0};
+	return (new);
 }

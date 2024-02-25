@@ -3,31 +3,57 @@
 /*                                                        :::      ::::::::   */
 /*   hash_map.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: qpupier <qpupier@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 17:05:58 by cbernot           #+#    #+#             */
-/*   Updated: 2024/02/24 21:27:25 by cbernot          ###   ########.fr       */
+/*   Updated: 2024/02/25 22:55:15 by qpupier          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "hotrace.h"
 
-unsigned int	hash(t_pair *input, unsigned int size, unsigned short int pos)
+unsigned int	hash(t_pair pair, unsigned int size)
 {
-	unsigned int	result;
+	unsigned int	hash;
 	unsigned int	i;
 
-	result = 0;
-	i = -1;
-	while (++i < input[pos].len - 1)
-		result += input[pos].str[i];
-	return (result % size);
+	hash = 5381;
+	i = 0;
+	while (i < pair.len)
+		hash = ((hash << 5) + hash) + pair.str[i++];
+	return (hash % size);
 }
 
-int	handle_collisions(t_cell *hash_map, int hash_size, int index)
+unsigned int	dif(t_pair a, t_pair b)
 {
-	int	offset;
-	int	i;
+	if (a.len != b.len)
+		return (1);
+	return (ft_strcmp(a.str, b.str));
+}
+
+int	handle_collisions_search(t_cell *hash_map, unsigned int hash_size, \
+		unsigned int index, t_pair key)
+{
+	unsigned int	offset;
+	unsigned int	i;
+
+	i = 0;
+	offset = 1;
+	while (dif(hash_map[(index + offset) % hash_size].key, key))
+	{
+		if (!hash_map[(index + offset) % hash_size].key.len)
+			return (-1);
+		offset = 1 << i;
+		i++;
+	}
+	return ((index + offset) % hash_size);
+}
+
+unsigned int	handle_collisions(t_cell *hash_map, unsigned int hash_size, \
+		unsigned int index)
+{
+	unsigned int	offset;
+	unsigned int	i;
 
 	i = 0;
 	offset = 1;
@@ -39,59 +65,12 @@ int	handle_collisions(t_cell *hash_map, int hash_size, int index)
 	return ((index + offset) % hash_size);
 }
 
-// char	*search(t_cell *map, int map_size, t_pair *input, int nb_elmt)
-// {
-// 	int		i;
-// 	char	*key;
-// 	int		index;
-
-// 	i = -1;
-// 	while (++i < nb_elmt)
-// 	{
-// 		key = input;
-// 		index = hash(&input, map_size);
-// 		if (map[index].key) //TODO comparer les deux cles
-// 			index = handle_collisions(map, map_size, index);
-// 		map[index].key = key;
-// 		map[index].value = input;
-// 		map[index].value_len = 0;
-// 		while (*input && *input != '\n')
-// 		{
-// 			input++;
-// 			map[index].value_len++;
-// 		}
-// 		if (*input)
-// 			*input = '\0';
-// 		input++;
-// 	}
-// 	return (input);
-// }
-
-// unsigned int	get_nb_elems(char *input)
-// {
-// 	int				i;
-// 	unsigned int	nb;
-
-// 	i = -1;
-// 	nb = 0;
-// 	while (input[++i])
-// 	{
-// 		if (input[i] == '\n')
-// 		{
-// 			nb++;
-// 			if (input[i + 1] && input[i + 1] == '\n')
-// 				return (nb >> 1);
-// 		}
-// 	}
-// 	return (nb >> 1);
-// }
-
 unsigned int	get_map_size(unsigned int nb)
 {
 	unsigned int	i;
 
 	i = 1;
 	while (i <= nb)
-		i *= 2;
+		i = i << 1;
 	return (i);
 }

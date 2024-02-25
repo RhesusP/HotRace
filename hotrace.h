@@ -3,23 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   hotrace.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cbernot <cbernot@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: qpupier <qpupier@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 10:09:38 by qpupier           #+#    #+#             */
-/*   Updated: 2024/02/24 23:38:54 by cbernot          ###   ########.fr       */
+/*   Updated: 2024/02/25 23:22:00 by qpupier          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HOTRACE_H
 # define HOTRACE_H
 
-# include <stdio.h> // TODO TO DELETE
 # include <unistd.h>
 # include <stdlib.h>
 
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1
-# endif
+# define BUFFER_SIZE 64
+# define ALLOC_SIZE 1
 
 typedef struct s_pair
 {
@@ -33,23 +31,25 @@ typedef struct s_cell
 	t_pair	value;
 }	t_cell;
 
-t_pair		get_next_line(int fd);
-size_t		ft_strlen(const char *s);
-char		*ft_strdup(const char *s1);
-char		*ft_strjoin(char const *s1, char const *s2);
-char		*ft_substr(char const *s, unsigned int start, size_t len);
-t_pair		ft_free_stash(char **stash, int create_line);
-
-t_pair			*ft_realloc(t_pair *datas, int old_size, int new_size);
-void			copy(char *buf, char *datas, int begin, int count);
-void			ft_putstr_endl(char *s, int len);
-
-int				handle_collisions(t_cell *hash_map, int hash_size, int index);
-unsigned int	hash(t_pair *input, unsigned int size, unsigned short int pos);
+void			copy(char *buf, char *datas, unsigned int begin, \
+		unsigned int count);
+void			ft_putstr_endl(char *s, unsigned int len);
+void			insert(t_pair *input, t_cell *map, unsigned int elems, \
+		unsigned int map_size);
+void			search(t_cell *map, unsigned int map_size);
+t_pair			*ft_free_str(char **str, t_pair *ret);
+t_pair			*ft_realloc(t_pair *datas, unsigned int old_size, \
+		unsigned int new_size);
+t_pair			*reading(unsigned int *position);
+char			*ft_strndup(const char *s1, unsigned int n);
+t_pair			gnl_std_input(void);
+unsigned int	dif(t_pair a, t_pair b);
 unsigned int	get_map_size(unsigned int nb);
-
-int	ft_strcmp(char *s1, char *s2);
-
-t_pair	create_pair(char *str, unsigned int len);
+unsigned int	handle_collisions(t_cell *hash_map, unsigned int hash_size, \
+		unsigned int index);
+unsigned int	hash(t_pair pair, unsigned int size);
+int				ft_strcmp(const char *s1, const char *s2);
+int				handle_collisions_search(t_cell *hash_map, \
+		unsigned int hash_size, unsigned int index, t_pair key);
 
 #endif
